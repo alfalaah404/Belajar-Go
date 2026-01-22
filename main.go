@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
-	_ "belajar-go/docs"
+	"belajar-go/docs"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -270,9 +271,21 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 // @title           Category API
 // @version         1.0
 // @description     API untuk mengelola kategori produk
-// @host      localhost:8080
 // @BasePath  /
 func main() {
+	// Set Swagger host secara dinamis berdasarkan environment
+	host := os.Getenv("SWAGGER_HOST")
+	if host == "" {
+		host = "localhost:8080" // default untuk local development
+	}
+	docs.SwaggerInfo.Host = host
+
+	// Set scheme (http/https) secara dinamis
+	scheme := os.Getenv("SWAGGER_SCHEME")
+	if scheme == "" {
+		scheme = "http" // default untuk local development
+	}
+	docs.SwaggerInfo.Schemes = []string{scheme}
 
 	// endpoint buat detail kategori (GET, PUT, DELETE)
 	http.HandleFunc("/categories/", func(w http.ResponseWriter, r *http.Request) {
@@ -299,10 +312,18 @@ func main() {
 
 	// Swagger documentation endpoint
 	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
-	fmt.Println("Server running di localhost:8080")
 
-	err := http.ListenAndServe(":8080", nil)
+	// Get port from environment variable (untuk Railway, Render, dll)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080" // default untuk local development
+	}
+
+	fmt.Printf("Server running on port %s\n", port)
+	fmt.Printf("Swagger UI: http://localhost:%s/swagger/index.html\n", port)
+
+	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
-		fmt.Println("gagal running server")
+		fmt.Printf("Failed to start server: %v\n", err)
 	}
 }
