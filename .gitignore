@@ -3,3 +3,4 @@
 belajar-go
 belajar-go.exe
 *.log
+.env

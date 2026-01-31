@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  main.ApiResponse:
+  models.ApiResponse:
     properties:
       data: {}
       message:
@@ -10,7 +10,7 @@ definitions:
         example: success
         type: string
     type: object
-  main.Category:
+  models.Category:
     properties:
       description:
         example: Produk elektronik dan gadget
@@ -22,13 +22,25 @@ definitions:
         example: Elektronik
         type: string
     type: object
+  models.Product:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: integer
+      stock:
+        type: integer
+    type: object
+host: localhost:8080
 info:
   contact: {}
-  description: API untuk mengelola kategori produk
-  title: Category API
+  description: REST API untuk mengelola produk dan kategori
+  title: Product & Category API
   version: "1.0"
 paths:
-  /categories:
+  /api/categories:
     get:
       consumes:
       - application/json
@@ -40,13 +52,17 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/main.ApiResponse'
+            - $ref: '#/definitions/models.ApiResponse'
             - properties:
                 data:
                   items:
-                    $ref: '#/definitions/main.Category'
+                    $ref: '#/definitions/models.Category'
                   type: array
               type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
       summary: List all categories
       tags:
       - categories
@@ -60,7 +76,7 @@ paths:
         name: category
         required: true
         schema:
-          $ref: '#/definitions/main.Category'
+          $ref: '#/definitions/models.Category'
       produces:
       - application/json
       responses:
@@ -68,19 +84,19 @@ paths:
           description: Created
           schema:
             allOf:
-            - $ref: '#/definitions/main.ApiResponse'
+            - $ref: '#/definitions/models.ApiResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/main.Category'
+                  $ref: '#/definitions/models.Category'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/main.ApiResponse'
+            $ref: '#/definitions/models.ApiResponse'
       summary: Create a new category
       tags:
       - categories
-  /categories/{id}:
+  /api/categories/{id}:
     delete:
       consumes:
       - application/json
@@ -97,15 +113,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.ApiResponse'
+            $ref: '#/definitions/models.ApiResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/main.ApiResponse'
+            $ref: '#/definitions/models.ApiResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/main.ApiResponse'
+            $ref: '#/definitions/models.ApiResponse'
       summary: Delete category
       tags:
       - categories
@@ -126,19 +142,19 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/main.ApiResponse'
+            - $ref: '#/definitions/models.ApiResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/main.Category'
+                  $ref: '#/definitions/models.Category'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/main.ApiResponse'
+            $ref: '#/definitions/models.ApiResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/main.ApiResponse'
+            $ref: '#/definitions/models.ApiResponse'
       summary: Get category by ID
       tags:
       - categories
@@ -157,7 +173,7 @@ paths:
         name: category
         required: true
         schema:
-          $ref: '#/definitions/main.Category'
+          $ref: '#/definitions/models.Category'
       produces:
       - application/json
       responses:
@@ -165,22 +181,179 @@ paths:
           description: OK
           schema:
             allOf:
-            - $ref: '#/definitions/main.ApiResponse'
+            - $ref: '#/definitions/models.ApiResponse'
             - properties:
                 data:
-                  $ref: '#/definitions/main.Category'
+                  $ref: '#/definitions/models.Category'
               type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/main.ApiResponse'
+            $ref: '#/definitions/models.ApiResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/main.ApiResponse'
+            $ref: '#/definitions/models.ApiResponse'
       summary: Update category
       tags:
       - categories
+  /api/products:
+    get:
+      consumes:
+      - application/json
+      description: Get list of all products from database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ApiResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Product'
+                  type: array
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      summary: List all products
+      tags:
+      - products
+    post:
+      consumes:
+      - application/json
+      description: Create a new product with the provided information
+      parameters:
+      - description: Product object
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Product'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Product'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      summary: Create a new product
+      tags:
+      - products
+  /api/products/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      summary: Delete product
+      tags:
+      - products
+    get:
+      consumes:
+      - application/json
+      description: Get a single product by its ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Product'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      summary: Get product by ID
+      tags:
+      - products
+    put:
+      consumes:
+      - application/json
+      description: Update an existing product by ID
+      parameters:
+      - description: Product ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Product object
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/models.Product'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Product'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      summary: Update product
+      tags:
+      - products
   /up:
     get:
       consumes:
@@ -192,8 +365,10 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/main.ApiResponse'
+            $ref: '#/definitions/models.ApiResponse'
       summary: Health check endpoint
       tags:
       - health
+schemes:
+- http
 swagger: "2.0"
