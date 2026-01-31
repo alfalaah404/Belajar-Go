@@ -110,6 +110,15 @@ func main() {
 	// Swagger documentation endpoint
 	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
+	// Redirect root path to swagger documentation
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
+			return
+		}
+		http.NotFound(w, r)
+	})
+
 	// Get port from environment variable (untuk Railway, Render, dll)
 	port := config.Port
 	if port == "" {
