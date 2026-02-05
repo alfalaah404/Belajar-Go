@@ -39,7 +39,8 @@ func (h *ProductHandler) HandleProducts(w http.ResponseWriter, r *http.Request) 
 // @Failure      500  {object}  models.ApiResponse
 // @Router       /api/products [get]
 func (h *ProductHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	products, err := h.service.GetAll()
+	name := r.URL.Query().Get("name")
+	products, err := h.service.GetAll(name)
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
