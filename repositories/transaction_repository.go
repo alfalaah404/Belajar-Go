@@ -58,10 +58,25 @@ func (repo *TransactionRepository) CreateTransaction(items []models.CheckoutItem
 		return nil, err
 	}
 
-	for i := range details {
-		details[i].TransactionID = transactionID
-		_, err = tx.Exec("INSERT INTO transaction_details (transaction_id, product_id, quantity, subtotal) VALUES ($1, $2, $3, $4)",
-			transactionID, details[i].ProductID, details[i].Quantity, details[i].Subtotal)
+	// mengurangi N+1 query dengan batch insert
+	if len(details) > 0 {
+		query := "INSERT INTO transaction_details (transaction_id, product_id, quantity, subtotal) VALUES "
+		args := make([]interface{}, 0, len(details)*4)
+
+		for i := range details {
+			details[i].TransactionID = transactionID
+
+			if i > 0 {
+				query += ", "
+			}
+
+			pos := i * 4
+			query += fmt.Sprintf("($%d, $%d, $%d, $%d)", pos+1, pos+2, pos+3, pos+4)
+
+			args = append(args, transactionID, details[i].ProductID, details[i].Quantity, details[i].Subtotal)
+		}
+
+		_, err = tx.Exec(query, args...)
 		if err != nil {
 			return nil, err
 		}
