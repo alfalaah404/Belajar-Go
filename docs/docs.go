@@ -272,7 +272,7 @@ const docTemplate = `{
         },
         "/api/products": {
             "get": {
-                "description": "Get list of all products from database",
+                "description": "Get list of all products from database with optional search by name",
                 "consumes": [
                     "application/json"
                 ],
@@ -283,6 +283,14 @@ const docTemplate = `{
                     "products"
                 ],
                 "summary": "List all products",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search product by name (case-insensitive)",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

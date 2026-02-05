@@ -31,10 +31,11 @@ func (h *ProductHandler) HandleProducts(w http.ResponseWriter, r *http.Request) 
 
 // GetAll godoc
 // @Summary      List all products
-// @Description  Get list of all products from database
+// @Description  Get list of all products from database with optional search by name
 // @Tags         products
 // @Accept       json
 // @Produce      json
+// @Param        name  query     string  false  "Search product by name (case-insensitive)"
 // @Success      200  {object}  models.ApiResponse{data=[]models.Product}
 // @Failure      500  {object}  models.ApiResponse
 // @Router       /api/products [get]

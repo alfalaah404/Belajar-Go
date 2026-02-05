@@ -221,7 +221,13 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get list of all products from database
+      description: Get list of all products from database with optional search by
+        name
+      parameters:
+      - description: Search product by name (case-insensitive)
+        in: query
+        name: name
+        type: string
       produces:
       - application/json
       responses:
