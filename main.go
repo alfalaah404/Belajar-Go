@@ -106,7 +106,7 @@ func main() {
 	// Set Swagger host secara dinamis berdasarkan environment
 	host := config.SwaggerHost
 	if host == "" {
-		host = config.SwaggerHost // default untuk local development
+		host = "localhost:8080" // default untuk local development
 	}
 	docs.SwaggerInfo.Host = host
 
