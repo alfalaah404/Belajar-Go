@@ -10,6 +10,13 @@ definitions:
         example: success
         type: string
     type: object
+  models.BestProduct:
+    properties:
+      nama:
+        type: string
+      qty_terjual:
+        type: integer
+    type: object
   models.Category:
     properties:
       description:
@@ -35,6 +42,15 @@ definitions:
       price:
         type: integer
       stock:
+        type: integer
+    type: object
+  models.ReportResponse:
+    properties:
+      produk_terlaris:
+        $ref: '#/definitions/models.BestProduct'
+      total_revenue:
+        type: integer
+      total_transaksi:
         type: integer
     type: object
 host: localhost:8080
@@ -358,6 +374,69 @@ paths:
       summary: Update product
       tags:
       - products
+  /api/reports:
+    get:
+      consumes:
+      - application/json
+      description: Get report for transactions within a date range
+      parameters:
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: start_date
+        required: true
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: end_date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ReportResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      summary: Get report by date range
+      tags:
+      - reports
+  /api/reports/hari-ini:
+    get:
+      consumes:
+      - application/json
+      description: Get report for today's transactions
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ApiResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ReportResponse'
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ApiResponse'
+      summary: Get today's report
+      tags:
+      - reports
   /up:
     get:
       consumes:

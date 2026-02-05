@@ -89,12 +89,19 @@ func main() {
 	transactionService := services.NewTransactionService(transactionRepo)
 	transactionHandler := handlers.NewTransactionHandler(transactionService)
 
+	// dependency injection for reports
+	reportRepo := repositories.NewReportRepository(db)
+	reportService := services.NewReportService(reportRepo)
+	reportHandler := handlers.NewReportHandler(reportService)
+
 	// Setup routes
 	http.HandleFunc("/api/products", productHandler.HandleProducts)
 	http.HandleFunc("/api/products/", productHandler.HandleProductByID)
 	http.HandleFunc("/api/categories", categoryHandler.HandleCategories)
 	http.HandleFunc("/api/categories/", categoryHandler.HandleCategoryByID)
 	http.HandleFunc("/api/checkout", transactionHandler.Checkout)
+	http.HandleFunc("/api/reports/hari-ini", reportHandler.HandleReports)
+	http.HandleFunc("/api/reports", reportHandler.HandleReports)
 
 	// Set Swagger host secara dinamis berdasarkan environment
 	host := config.SwaggerHost
